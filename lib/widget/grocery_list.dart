@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shopping_list/data/dummy_items.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:shopping_list/widget/new_item.dart';
 import 'package:shopping_list/models/grocery_item.dart';
 
@@ -14,18 +15,17 @@ class _GroceryListState extends State<GroceryList> {
   final List<GroceryItem> _groceryItems = [];
 
   void _addItem() async {
-    final newItem = await Navigator.of(context).push<GroceryItem>(
+    await Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => const NewItem(),
       ),
     );
 
-    if (newItem == null) {
-      return;
-    }
-    setState(() {
-      _groceryItems.add(newItem);
-    });
+    final url = Uri.https(
+        'flutter-shoppinglist-app-bdf3d-default-rtdb.firebaseio.com',
+        'shopping-list.json');
+    final response = await http.get(url);
+    print(response);
   }
 
   void _removeItem(GroceryItem item) {
