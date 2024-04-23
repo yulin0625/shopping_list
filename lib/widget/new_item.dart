@@ -30,39 +30,55 @@ class _NewItemState extends State<NewItem> {
       });
       _formKey.currentState!.save();
       final url = Uri.https(
-          'flutter-shoppinglist-app-bdf3d-default-rtdb.firebaseio.com',
+          'flutter-shoppinglist-app-bdf3d-default-rtdb.firebaseio',
           'shopping-list.json');
-      final response = await http.post(
-        url,
-        headers: {
-          'Context-Type': 'application/json',
-        },
-        body: json.encode(
-          {
-            'name': _enteredName,
-            'quantity': _enteredQuantity,
-            'category': _selectedCategory.title,
+      try {
+        final response = await http.post(
+          url,
+          headers: {
+            'Context-Type': 'application/json',
           },
-        ),
-      );
+          body: json.encode(
+            {
+              'name': _enteredName,
+              'quantity': _enteredQuantity,
+              'category': _selectedCategory.title,
+            },
+          ),
+        );
 
-      print(response.body);
-      print(response.statusCode);
-
-      final Map<String, dynamic> resData = json.decode(response.body);
-
-      if (!context.mounted) {
+        print(response.body);
+        print(response.statusCode);
+        final Map<String, dynamic> resData = json.decode(response.body);
+        if (!context.mounted) {
+          return;
+        }
+        Navigator.of(context).pop(
+          GroceryItem(
+            id: resData['name'],
+            name: _enteredName,
+            quantity: _enteredQuantity,
+            category: _selectedCategory,
+          ),
+        );
+      } catch (error) {
+        setState(() {
+          _isSending = false;
+        });
+        if (!context.mounted) {
+          return;
+        }
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                const Text('Something went wrong! Please try again later.'),
+            backgroundColor:
+                Theme.of(context).colorScheme.error.withOpacity(0.75),
+          ),
+        );
         return;
       }
-
-      Navigator.of(context).pop(
-        GroceryItem(
-          id: resData['name'],
-          name: _enteredName,
-          quantity: _enteredQuantity,
-          category: _selectedCategory,
-        ),
-      );
     }
   }
 
