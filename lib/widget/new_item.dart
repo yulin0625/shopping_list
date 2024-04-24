@@ -30,7 +30,7 @@ class _NewItemState extends State<NewItem> {
       });
       _formKey.currentState!.save();
       final url = Uri.https(
-          'flutter-shoppinglist-app-bdf3d-default-rtdb.firebaseio',
+          'flutter-shoppinglist-app-bdf3d-default-rtdb.firebaseio.com',
           'shopping-list.json');
       try {
         final response = await http.post(
